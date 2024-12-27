@@ -1,4 +1,3 @@
-// Updated Manager.jsx
 import { default as React, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -126,21 +125,21 @@ const Manager = () => {
           Your own Password Manager
         </p>
         <div className="flex flex-col items-center gap-6 p-4 text-black md:gap-8 md:p-6">
-          <input value={form.site} onChange={handleChange} placeholder="Enter website URL"
+          <input value={form.site} onChange={handleChange} placeholder="Enter website URL*"
             className="w-full p-4 py-1 border border-purple-500 rounded-full"
             type="text"
             name="site"
             id="site"
           />
           <div className="flex flex-col w-full gap-4 md:flex-row">
-            <input value={form.username} onChange={handleChange} placeholder="Enter Username"
+            <input value={form.username} onChange={handleChange} placeholder="Enter Username*"
               className="w-full p-4 py-1 border border-purple-500 rounded-full"
               type="text"
               name="username"
               id="username"
             />
             <div className="relative">
-              <input ref={passwordRef} value={form.password} onChange={handleChange} placeholder="Enter Password"
+              <input ref={passwordRef} value={form.password} onChange={handleChange} placeholder="Enter Password*"
                 className="w-full p-4 py-1 border border-purple-500 rounded-full"
                 type="password"
                 name="password"
