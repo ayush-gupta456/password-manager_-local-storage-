@@ -9,11 +9,18 @@ const Manager = () => {
   const [form, setform] = useState({ site: "", username: "", password: "" });
   const [passwordArray, setPasswordArray] = useState([]);
 
+  const getPasswords=async()=>{
+    let req=await fetch("http://localhost:5000/")
+    let passwords =await req.json()
+    console.log(passwords)
+      setPasswordArray(passwords);
+      
+
+  }
+
   useEffect(() => {
-    let passwords = localStorage.getItem("passwords");
-    if (passwords) {
-      setPasswordArray(JSON.parse(passwords));
-    }
+    getPasswords()
+ 
   }, []);
 
   const copyText = (text) => {
