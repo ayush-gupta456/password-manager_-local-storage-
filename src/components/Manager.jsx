@@ -8,7 +8,8 @@ const Manager = () => {
   const [form, setForm] = useState({ site: "", username: "", password: "", id: null });
   const [passwordArray, setPasswordArray] = useState([]);
 
-  // Fetch passwords from backend
+  
+
   const getPasswords = async () => {
     try {
       let req = await fetch("http://localhost:5000/");
@@ -24,13 +25,13 @@ const Manager = () => {
     getPasswords();
   }, []);
 
-  // Copy text to clipboard
+
   const copyText = (text) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
 
-  // Show/Hide password toggle
+
   const showPassword = () => {
     if (passwordRef.current.type === "password") {
       passwordRef.current.type = "text";
@@ -41,13 +42,13 @@ const Manager = () => {
     }
   };
 
-  // Save new password
+
   const savePassword = async () => {
     if (form.site.length > 3 && form.username.length > 3 && form.password.length > 3) {
       const newPassword = { ...form };
 
       try {
-        let res = await fetch("http://localhost:5000/", { 
+        let res = await fetch("http://localhost:5000/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newPassword),
@@ -69,7 +70,7 @@ const Manager = () => {
     }
   };
 
-  // Delete a password
+
   const deletePassword = async (id) => {
     let confirmDelete = window.confirm("Do you really want to delete this password?");
     if (confirmDelete) {
@@ -82,7 +83,7 @@ const Manager = () => {
         });
 
         if (!res.ok) {
-          setPasswordArray(passwordArray); // Revert to original state if error occurs
+          setPasswordArray(passwordArray); 
           throw new Error("Failed to delete password");
         }
 
@@ -94,21 +95,21 @@ const Manager = () => {
     }
   };
 
-  // Edit a password
+
   const editPassword = async (id) => {
     const selectedPassword = passwordArray.find(item => item._id === id);
     setForm({ site: selectedPassword.site, username: selectedPassword.username, password: selectedPassword.password, id: selectedPassword._id });
 
-    // Remove the old password from the state for optimistic UI update
+
     const updatedPasswordArray = passwordArray.filter(item => item._id !== id);
     setPasswordArray(updatedPasswordArray);
   };
 
-  // Update the password
+
   const updatePassword = async () => {
     if (form.site.length > 3 && form.username.length > 3 && form.password.length > 3) {
       const updatedPassword = { ...form };
-  
+
       try {
         let res = await fetch(`http://localhost:5000/passwords/${form.id}`, {
           method: "PUT",
@@ -117,12 +118,13 @@ const Manager = () => {
         });
 
         if (res.ok) {
-          // Fetch the updated record to avoid data inconsistencies
+
+
           const updatedPasswordData = await res.json();
-          setPasswordArray(prevState => 
+          setPasswordArray(prevState =>
             prevState.map(item => item._id === updatedPasswordData._id ? updatedPasswordData : item)
           );
-          setForm({ site: "", username: "", password: "", id: null }); // Reset form
+          setForm({ site: "", username: "", password: "", id: null }); 
           toast.success("Password Updated!");
         } else {
           throw new Error("Failed to update password");
@@ -136,7 +138,8 @@ const Manager = () => {
     }
   };
 
-  // Handle input changes
+
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -144,14 +147,13 @@ const Manager = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick pauseOnHover draggable theme="dark" />
-      
+
       <div className="p-3 md:mycontainer min-h-[80.7vh]">
         <h1 className="text-4xl font-bold text-center">
           <span className="text-purple-400">&lt; </span>pass<span className="text-purple-500">KEEPER/ &gt;</span>
         </h1>
         <p className="text-lg text-center text-purple-900">Your own Password Manager</p>
 
-        {/* Input Fields */}
         <div className="flex flex-col items-center gap-6 p-4">
           <input value={form.site} onChange={handleChange} placeholder="Enter website URL*" className="w-full p-4 py-1 border border-purple-500 rounded-full" type="text" name="site" />
 
@@ -171,10 +173,9 @@ const Manager = () => {
           </button>
         </div>
 
-        {/* Password List */}
         <div className="passwords">
           <h2 className="py-4 text-xl font-bold">Your Passwords</h2>
-          {passwordArray.length === 0 ? <div>No passwords to show</div> : 
+          {passwordArray.length === 0 ? <div>No passwords to show</div> :
             <table className="w-full mb-10 overflow-hidden rounded-md table-auto">
               <thead className="text-white bg-blue-600">
                 <tr>
@@ -186,55 +187,55 @@ const Manager = () => {
               </thead>
               <tbody className="bg-purple-200">
                 {passwordArray.map((item, index) => (
-                   <tr key={index}>
-                   <td className="py-2 text-center border border-white">
-                     <div className="flex items-center justify-center">
-                       <a href={item.site} target="_blank" >{item.site}</a>
-                       <div className="cursor-pointer lordiconcopy size-7" onClick={() => { copyText(item.site) }} >
-                         <lord-icon
-                           style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
-                           src="https://cdn.lordicon.com/iykgtsbt.json" trigger="hover">
-                         </lord-icon>
-                       </div>
-                     </div>
-                   </td>
-                   <td className="py-2 text-center border border-white">
-                     <div className="flex items-center justify-center">{item.username}
-                       <div className="cursor-pointer lordiconcopy size-7" onClick={() => { copyText(item.username) }} >
-                         <lord-icon
-                           style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
-                           src="https://cdn.lordicon.com/iykgtsbt.json" trigger="hover">
-                         </lord-icon>
-                       </div>
-                     </div>
-                   </td>
-                   <td className="py-2 text-center border border-white">
-                     <div className="flex items-center justify-center">{item.password}
-                       <div className="cursor-pointer lordiconcopy size-7" onClick={() => { copyText(item.password) }} >
-                         <lord-icon
-                           style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
-                           src="https://cdn.lordicon.com/iykgtsbt.json" trigger="hover">
-                         </lord-icon>
-                       </div>
-                     </div>
-                   </td>
-                   <td className="justify-center py-2 text-center border border-white">
-                     <span className="mx-1 cursor-pointer " onClick={() => { editPassword(item._id) }} >
-                       <lord-icon
-                         src="https://cdn.lordicon.com/gwlusjdu.json"
-                         trigger="hover"
-                         style={{ "width": "25px", "height": "25px" }}
-                       >
-                       </lord-icon> </span>
-                     <span className="mx-1 cursor-pointer" onClick={() => { deletePassword(item._id) }} >
-                       <lord-icon
-                         src="https://cdn.lordicon.com/skkahier.json"
-                         trigger="hover"
-                         style={{ "width": "25px", "height": "25px" }}
-                       >
-                       </lord-icon> </span>
-                   </td>
-                 </tr>
+                  <tr key={index}>
+                    <td className="py-2 text-center border border-white">
+                      <div className="flex items-center justify-center">
+                        <a href={item.site} target="_blank" >{item.site}</a>
+                        <div className="cursor-pointer lordiconcopy size-7" onClick={() => { copyText(item.site) }} >
+                          <lord-icon
+                            style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                            src="https://cdn.lordicon.com/iykgtsbt.json" trigger="hover">
+                          </lord-icon>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2 text-center border border-white">
+                      <div className="flex items-center justify-center">{item.username}
+                        <div className="cursor-pointer lordiconcopy size-7" onClick={() => { copyText(item.username) }} >
+                          <lord-icon
+                            style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                            src="https://cdn.lordicon.com/iykgtsbt.json" trigger="hover">
+                          </lord-icon>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2 text-center border border-white">
+                      <div className="flex items-center justify-center">{item.password}
+                        <div className="cursor-pointer lordiconcopy size-7" onClick={() => { copyText(item.password) }} >
+                          <lord-icon
+                            style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
+                            src="https://cdn.lordicon.com/iykgtsbt.json" trigger="hover">
+                          </lord-icon>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="justify-center py-2 text-center border border-white">
+                      <span className="mx-1 cursor-pointer " onClick={() => { editPassword(item._id) }} >
+                        <lord-icon
+                          src="https://cdn.lordicon.com/gwlusjdu.json"
+                          trigger="hover"
+                          style={{ "width": "25px", "height": "25px" }}
+                        >
+                        </lord-icon> </span>
+                      <span className="mx-1 cursor-pointer" onClick={() => { deletePassword(item._id) }} >
+                        <lord-icon
+                          src="https://cdn.lordicon.com/skkahier.json"
+                          trigger="hover"
+                          style={{ "width": "25px", "height": "25px" }}
+                        >
+                        </lord-icon> </span>
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -245,4 +246,4 @@ const Manager = () => {
   );
 };
 
-export default Manager;
+export default Manager

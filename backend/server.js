@@ -11,7 +11,7 @@ const port = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// MongoDB Connection
+
 const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 client.connect().then(() => {
@@ -21,7 +21,7 @@ client.connect().then(() => {
 const db = client.db('password_manager_mongo');
 const collection = db.collection('passwords');
 
-// GET all passwords
+
 app.get('/', async (req, res) => {
     try {
         const passwords = await collection.find({}).toArray();
@@ -31,7 +31,7 @@ app.get('/', async (req, res) => {
     }
 });
 
-// POST - Save a password
+
 app.post('/', async (req, res) => {
     try {
         const { site, username, password } = req.body;
@@ -45,7 +45,7 @@ app.post('/', async (req, res) => {
     }
 });
 
-// DELETE - Remove a password by ID
+
 app.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -61,18 +61,19 @@ app.delete('/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-// Example Node.js/Express backend route for updating a password
+
+
 app.put('/passwords/:id', async (req, res) => {
     try {
         const updatedPassword = req.body;
         const id = req.params.id;
 
-        // Check if the ID is valid
+
         if (!ObjectId.isValid(id)) {
             return res.status(400).json({ message: 'Invalid ID' });
         }
 
-        // Perform the update
+
         const result = await collection.updateOne(
             { _id: new ObjectId(id) },
             { $set: updatedPassword }
@@ -82,7 +83,7 @@ app.put('/passwords/:id', async (req, res) => {
             return res.status(404).json({ message: 'Password not found' });
         }
 
-        // Send the updated password details as a response
+        
         const updatedRecord = await collection.findOne({ _id: new ObjectId(id) });
         res.json(updatedRecord);
     } catch (error) {
